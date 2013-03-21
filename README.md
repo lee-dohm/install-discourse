@@ -52,7 +52,7 @@ To install system packages, you must have root privledges. Since the admin accou
 
 ```bash
 # Install required packages
-$ sudo apt-get install build-essential postgresql-9.1 postgresql-contrib-9.1 libxml2-dev libxslt-dev libpq-dev redis-server nginx postfix
+$ sudo apt-get install git-core build-essential postgresql postgresql-contrib libxml2-dev libxslt-dev libpq-dev redis-server nginx postfix
 ```
 
 During the installation, you will be prompted for Postfix configuration information. [Postfix](https://help.ubuntu.com/community/Postfix) is used to send mail from Discourse. Just keep the default "Internet Site."
@@ -126,16 +126,19 @@ $ git clone https://github.com/lee-dohm/discourse.git
 $ cd discourse
 ```
 
-Create an `.rvmrc` file for Discourse and initialize it:
+Create an `.rvmrc` file for Discourse:
 
 ```bash
 $ echo "rvm 1.9.3@discourse" > .rvmrc
+```
+
+Now it is necessary to leave that directory and re-enter it, so that ```rvm``` will notice the .rvmrc file that was just created.
+```bash
 $ cd ~
 $ cd ~/source/discourse
 ```
 
-It will ask if you want to trust the `.rvmrc` file.  Say yes and then install the gems necessary for Discourse:
-
+ ```rvm``` will ask if you want to trust the `.rvmrc` file.  Say yes and then install the gems necessary for Discourse:
 ```bash
 $ bundle install
 ```
@@ -260,6 +263,16 @@ $ sudo rm /etc/nginx/sites-enabled/default
 $ sudo service nginx start
 ```
 
+### Set a secret session token
+
+```bash
+$ rake secret
+```
+
+Now copy the output of the ```rake secret``` command, open ```initializers/secret_token.rb``` in your text editor, and:
+* Remove the ```raise``` line from the production section.
+* Edit the remainder of the production section to hold the token from ```rake secret``` (paste it into the string).
+
 ### Create Production Database
 
 ```bash
@@ -270,7 +283,6 @@ $ rake db:create db:migrate db:seed_fu
 ### Deploy Discourse App to `/var/www`
 
 ```bash
-$ vi config/initializers/secret_token.rb
 $ export RAILS_ENV=production
 $ rake assets:precompile
 $ sudo -u www-data cp -r ~/source/discourse/ /var/www
