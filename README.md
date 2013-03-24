@@ -15,15 +15,15 @@ I decided on Ubuntu 12.04 LTS x64 since it is the flavor of Ubuntu that the [mai
 
 Before creating your EC2 instance, you should register the domain name you want to use for your forum. I'm using discoursetest.org for this document, and forum.discoursetest.org as the FQDN.  
 
-After creating your account at Amazon AWS, launch an instance *with at least 1GB of RAM* [1], and select the Ubuntu OS image you want to use. I set the Hostname to forum.discoursetest.org. 
+After creating your account at Amazon AWS, launch an instance *with at least 1GB of RAM* [1], and select the Ubuntu OS image you want to use. I set the hostname to forum.discoursetest.org. 
 
-You will need to allocate an Elastic IP address and associate it with your new EC2 instance after you've started it.  You should go to your domain registrar and set the DNS records to point to your new IP.  I've set both the * and @ records to point to the instance's IP. This allows the root domain and all sub-domains to resolve to instance's IP address. 
+You will need to allocate an Elastic IP address and associate it with your new EC2 instance after you've started it.  You should go to your domain registrar and set the DNS records to point to your new IP. I've set both the * and @ records to point to the instance's IP. This allows the root domain and all sub-domains to resolve to the instance's IP address. 
 
-[1] A minimum of 1GB of RAM is required to compile assets for production.  At the time of this writing, an `m1.small` instance is the smallest instance that has 1GB of RAM.
+[1] A minimum of 1GB of RAM is required to compile assets for production. At the time of this writing, an `m1.small` instance is the smallest instance that has 1GB of RAM.
 
 ## Log in to Your Server
 
-I will use discoursetest.org when a domain name is required in the installation. You should replace discoursetest.org with your own domain name. If you are using OS X or Linux, start a terminal and ssh to your new server. Windows users should consider installing [Putty](http://putty.org/) to access your new server.
+I will use discoursetest.org when a domain name is required in the installation. You should replace discoursetest.org with your own domain name. If you are using OS X or Linux, start a terminal and ssh to your new server. Windows users should consider installing [Putty](http://putty.org/) to access their new server.
 
 ## Create a User Account
 
@@ -40,15 +40,15 @@ $ sudo adduser admin sudo
 
 ```bash
 $ logout
-# now back at the local terminal prompt
+# Now back at the local terminal prompt
 $ ssh admin@discoursetest.org
 ```
 
 ## Use `apt-get` to Install Core System Dependencies
 
-The apt-get command is used to add packages to Ubuntu (and all Debian based Linux distributions). The Amazon EC2 Ubuntu images come with a limited configuration, so you will have to install many of the software the dependencies yourself.
+The apt-get command is used to add packages to Ubuntu (and all Debian based Linux distributions). The Amazon EC2 Ubuntu images come with a limited configuration, so you will have to install many of the software dependencies yourself.
 
-To install system packages, you must have root privledges. Since the admin account is part of the sudo group, the admin account can run commands with root privledges by using the sudo command. Just prepend sudo to any commands you want to run as root. This includes apt-get commands to install packages.
+To install system packages, you must have root privileges. Since the admin account is part of the sudo group, the admin account can run commands with root privileges by using the sudo command. Just prepend `sudo` to any commands you want to run as root. This includes apt-get commands to install packages.
 
 ```bash
 # Install required packages
@@ -61,14 +61,14 @@ At the next prompt just enter your domain name. In my test case this is discours
 
 ## Edit Configuration Files
 
-At various points in the installation procedure, you will need to edit configuration files with a text editor. `vi` is installed by default and is the de facto standard editor used by admins (although it appears that `nano` is configured as the default editor for many uses in the Ubuntu image), so I use `vi` for any editing commands, but you may want to consider installing the editor of your choice.
+At various points in the installation procedure, you will need to edit configuration files with a text editor. `vi` is installed by default and is the de facto standard editor used by admins (although it appears that `nano` is configured as the default editor for many users in the Ubuntu image), so I use `vi` for any editing commands, but you may want to consider installing the editor of your choice.
 
 ## Set the Host Name
 
 EC2's provisioning procedure doesn't assume your instance will require a hostname when it is created. I'd recommend editing /etc/hosts to correctly contain your hostname.
 
 ```bash
-$ vi /etc/hosts
+$ sudo vi /etc/hosts
 ```
 The first line of my /etc/hosts file looks like:
 
@@ -82,7 +82,7 @@ You should replace discoursetest.org with your own domain name.
 
 Discourse uses the Postgres database to store forum data. The configuration procedure is similar to MySQL, but I am a Postgres newbie, so if you have improvements to this aspect of the installation procedure, please let me know.
 
-Note: this is the easiest way to setup the Postgres server, but it also creates a highly privledged Postgres user account. Future revisions of this document may offer alternatives for creating the Postgres DBs, which would allow Discourse to login to Postgres as a user with lower privledges.
+Note: this is the easiest way to setup the Postgres server, but it also creates a highly privileged Postgres user account. Future revisions of this document may offer alternatives for creating the Postgres DBs, which would allow Discourse to login to Postgres as a user with lower privileges.
 
 ```bash
 $ sudo -u postgres createuser admin -s -P
@@ -111,7 +111,7 @@ $ rvm use --default 1.9.3
 $ rvm gemset create discourse
 ```
 
-*Note*: Some people are using Ruby v2.0 for their installations to good effect, but I have not tested version 2 with these instructions.
+*Note:* Some people are using Ruby v2.0 for their installations to good effect, but I have not tested version 2 with these instructions.
 
 ## Pull and Configure the Discourse Application
 
@@ -132,7 +132,7 @@ Create an `.rvmrc` file for Discourse:
 $ echo "rvm 1.9.3@discourse" > .rvmrc
 ```
 
-Now it is necessary to leave that directory and re-enter it, so that ```rvm``` will notice the .rvmrc file that was just created.
+Now it is necessary to leave that directory and re-enter it, so that `rvm` will notice the `.rvmrc` file that was just created.
 ```bash
 $ cd ~
 $ cd ~/source/discourse
@@ -145,7 +145,7 @@ $ bundle install
 
 ## Set Discourse Application Settings
 
-Now you have set the Discourse application settings. The configuration files are in a directory called `config`.  There are sample configuration files now included, so you need to copy these files and modify them with your own changes.
+Now you have set the Discourse application settings. The configuration files are in a directory called `config`.  There are sample configuration files included, so you need to copy these files and modify them with your own changes.
 
 ```
 $ cd ~/source/discourse/config
@@ -236,7 +236,7 @@ I'm a Unix and Rails newb (which is why I'm doing this the hard way) so I had a 
 * Using init.d for `nginx` and `thin`
 * Using Upstart for `sidekiq` and `clockwork`
 
-You may ask why I'm using two different systems for process maintenance and I will simply refer you to the aforementioned newbness.  I pieced all of this together from various guides and so things look a little patchy because of it.  But it works!
+You may ask why I'm using two different systems for process maintenance and I will simply refer you to the aforementioned newbness.  I pieced all of this together from various guides and so things look a little patchy because of it. But it works!
 
 ### Sources and Links
 
@@ -291,7 +291,7 @@ $ sudo -u www-data mkdir /var/www/discourse/tmp/sockets
 
 ### Configure `thin`
 
-I set up the `rvm` wrapper for Ruby v1.9.3, but you can configure it for whatever version you decide to use.  *Note*: `rvmsudo` executes a command as `root` but with access to the current `rvm` environment.
+I set up the `rvm` wrapper for Ruby v1.9.3, but you can configure it for whatever version you decide to use. *Note:* `rvmsudo` executes a command as `root` but with access to the current `rvm` environment.
 
 ```bash
 $ cd /var/www/discourse
@@ -300,7 +300,7 @@ $ rvmsudo thin config -C /etc/thin/discourse.yml -c /var/www/discourse --servers
 $ rvm wrapper 1.9.3@discourse bootup thin
 ```
 
-After generating the configuration, you'll need to edit the `/etc/thin/discourse.yml` file to change from `port` to `socket` to make things work with the default `nginx` configuration.  Just replace the line `port: 3000` with:
+After generating the configuration, you'll need to edit (using ```sudo```) the `/etc/thin/discourse.yml` file to change from `port` to `socket` to make things work with the default `nginx` configuration.  Just replace the line `port: 3000` with:
 
 ```yaml
 socket: tmp/sockets/thin.sock
@@ -351,7 +351,7 @@ $ rvm wrapper 1.9.3@discourse bootup sidekiq
 $ rvm wrapper 1.9.3@discourse bootup clockwork
 ```
 
-Finally, all we need to do is update the `discourse-clockwork-1.conf` and `discourse-sidekiq-1.conf` files to use the `rvm` wrapper for launching the tools.
+Finally, all we need to do is update the `/etc/init/discourse-clockwork-1.conf` and `/etc/init/discourse-sidekiq-1.conf` files to use the `rvm` wrapper for launching the tools.
 
 #### `discourse-clockwork-1.conf`
 
@@ -381,12 +381,12 @@ $ sudo start discourse
 
 ### Create Discourse Admin Account
 
-* Logon to site and create account using the application UI
+* Logon to the site and create an account using the application UI
 * Now make that account the admin:
 
 ```bash
 # Start the Rails console
-$ sudo -u www-data rails c
+$ rails c
 ```
 
 ```ruby
