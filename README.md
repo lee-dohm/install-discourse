@@ -128,19 +128,21 @@ $ git clone https://github.com/lee-dohm/discourse.git
 $ cd discourse
 ```
 
-Create an `.rvmrc` file for Discourse:
+Create `.ruby-version` and `.ruby-gemset` for Discourse:
 
 ```bash
-$ echo "rvm 1.9.3@discourse" > .rvmrc
+$ echo "1.9.3" > .ruby-version
+$ echo "discourse" > .ruby-gemset
 ```
 
 Now it is necessary to leave that directory and re-enter it, so that `rvm` will notice the `.rvmrc` file that was just created.
+
 ```bash
-$ cd ~
-$ cd ~/source/discourse
+$ cd ~ && cd ~/source/discourse
 ```
 
- ```rvm``` will ask if you want to trust the `.rvmrc` file.  Say yes and then install the gems necessary for Discourse:
+Install the gems necessary for Discourse:
+
 ```bash
 $ bundle install
 ```
@@ -260,6 +262,10 @@ $ sudo chmod g+w /var/www
 ```bash
 $ cd ~/source/discourse/
 $ sudo cp config/nginx.sample.conf /etc/nginx/sites-available/discourse.conf
+```
+Edit ```/etc/nginx/sites-available/discourse.conf``` and set ```server_name``` to the domain you want to use. When done, enable the site.
+```bash
+$ sudo vi /etc/nginx/sites-available/discourse.conf
 $ sudo ln -s /etc/nginx/sites-available/discourse.conf /etc/nginx/sites-enabled/discourse.conf
 $ sudo rm /etc/nginx/sites-enabled/default
 $ sudo service nginx start
@@ -272,8 +278,12 @@ $ rake secret
 ```
 
 Now copy the output of the ```rake secret``` command, open ```initializers/secret_token.rb``` in your text editor, and:
-* Remove the ```raise``` line from the production section.
-* Edit the remainder of the production section to hold the token from ```rake secret``` (paste it into the string).
+* Erase all code in that file
+* Paste the token from ```rake secret``` in this code (replace [TOKEN]):
+
+```
+Discourse::Application.config.secret_token = "[TOKEN]"
+```
 
 ### Create Production Database
 
@@ -398,7 +408,7 @@ u.admin = true
 u.save
 
 # Create a confirmation for their email address, if necessary
-token = user.email_tokens.create(email: user.email)
+token = u.email_tokens.create(email: u.email)
 EmailToken.confirm(token.token)
 ```
 
@@ -429,6 +439,16 @@ $ sudo service thin start
 $ sudo service nginx start
 $ sudo start discourse
 ```
+
+## TROUBLESHOOTING
+### You get complaints in the logs about gems that haven't been checked out
+To solve this:
+```bash
+$ cd ~/source/discourse
+$ bundle pack --all
+$ bundle install --path vendor/cache
+```
+After that follow the update instructions in the previous section.
 
 ## TODO
 
