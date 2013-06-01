@@ -54,6 +54,8 @@ The apt-get command is used to add packages to Ubuntu (and all Debian based Linu
 To install system packages, you must have root privileges. Since the admin account is part of the sudo group, the admin account can run commands with root privileges by using the sudo command. Just prepend `sudo` to any commands you want to run as root. This includes apt-get commands to install packages.
 
 ```bash
+# Update the package list
+$ sudo apt-get update
 # Install required packages
 $ sudo apt-get install git-core build-essential postgresql postgresql-contrib libxml2-dev libxslt-dev libpq-dev redis-server nginx postfix
 ```
