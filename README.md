@@ -4,7 +4,17 @@ Original copyright 2013 by Christopher Baus <christopher@baus.net>. Licensed und
 
 Updated version copyright 2013 by Lee Dohm <lee@liftedstudios.com>
 
-Discourse is [web discussion forum software](http://discourse.org) by Jeff Atwood (et al.). Considering the state of forum software, and Jeff's previous success with StackOverflow, I'm confident it is going to be a success. With that said it is still in a very early state, and if you are not an expert on Linux and Ruby on Rails administration, getting a Discourse site up and running can be a daunting task. 
+## DEPRECATION WARNING
+
+This guide was intended to be used with a much older version of Discourse than exists today. It has *not* been updated and is *not* being maintained. (And was kind of buggy even when I was using it.) Use the instructions here at your own risk. I am leaving them here only for historic purposes.
+
+There is a much better, more up-to-date and maintained set of Discourse installation guides here:
+
+[Discourse Installation](https://github.com/discourse/discourse/blob/master/docs/INSTALL.md)
+
+## Introduction
+
+Discourse is [web discussion forum software](http://discourse.org) by Jeff Atwood (et al.). Considering the state of forum software, and Jeff's previous success with StackOverflow, I'm confident it is going to be a success. With that said it is still in a very early state, and if you are not an expert on Linux and Ruby on Rails administration, getting a Discourse site up and running can be a daunting task.
 
 Hopefully the document will be useful for someone who has some Linux administration experience and wants to run and administrate their own Discourse server. I am erring on the side of verbosity.
 
@@ -16,9 +26,9 @@ I decided on Ubuntu 12.04 LTS x64 since it is the flavor of Ubuntu that the [mai
 
 Before creating your EC2 instance, you should register the domain name you want to use for your forum. I'm using discoursetest.org for this document, and forum.discoursetest.org as the FQDN.  
 
-After creating your account at Amazon AWS, launch an instance *with at least 1GB of RAM* [1], and select the Ubuntu OS image you want to use. I set the hostname to forum.discoursetest.org. 
+After creating your account at Amazon AWS, launch an instance *with at least 1GB of RAM* [1], and select the Ubuntu OS image you want to use. I set the hostname to forum.discoursetest.org.
 
-You will need to allocate an Elastic IP address and associate it with your new EC2 instance after you've started it.  You should go to your domain registrar and set the DNS records to point to your new IP. I've set both the * and @ records to point to the instance's IP. This allows the root domain and all sub-domains to resolve to the instance's IP address. 
+You will need to allocate an Elastic IP address and associate it with your new EC2 instance after you've started it.  You should go to your domain registrar and set the DNS records to point to your new IP. I've set both the * and @ records to point to the instance's IP. This allows the root domain and all sub-domains to resolve to the instance's IP address.
 
 [1] A minimum of 1GB of RAM is required to compile assets for production. At the time of this writing, an `m1.small` instance is the smallest instance that has at least 1GB of RAM.
 
@@ -30,7 +40,7 @@ I will use discoursetest.org when a domain name is required in the installation.
 
 While the Amazon EC2 Ubuntu images all have a non-root `ubuntu` admin user, I chose to create a more personal admin user account. For the purposes of this document, I'm going to call the new user `admin`.
 
-Adding the user to the sudo group will allow the user to perform tasks as root using the [sudo](https://help.ubuntu.com/community/RootSudo) command. 
+Adding the user to the sudo group will allow the user to perform tasks as root using the [sudo](https://help.ubuntu.com/community/RootSudo) command.
 
 ```bash
 $ sudo adduser admin
@@ -79,7 +89,7 @@ The first line of my /etc/hosts file looks like:
 127.0.0.1  forum.discoursetest.org forum localhost
 ```
 
-You should replace discoursetest.org with your own domain name. 
+You should replace discoursetest.org with your own domain name.
 
 ## Configure Postgres User Account
 
@@ -118,7 +128,7 @@ $ rvm gemset create discourse
 
 ## Pull and Configure the Discourse Application
 
-Now we are ready install the actual Discourse application. This will pull a copy of the Discourse app from my own branch. The advantage of using this branch is that it has been tested with these instructions, but it may fall behind the master which is rapidly changing. 
+Now we are ready install the actual Discourse application. This will pull a copy of the Discourse app from my own branch. The advantage of using this branch is that it has been tested with these instructions, but it may fall behind the master which is rapidly changing.
 
 ```bash
 # I prefer to keep source code in its own subdirectory
@@ -158,7 +168,7 @@ $ cp ./database.yml.sample ./database.yml
 $ cp ./redis.yml.sample ./redis.yml
 ```
 
-Now you need to edit the configuration files and apply your own settings. 
+Now you need to edit the configuration files and apply your own settings.
 
 Start by editing the database configuration file which should be now located at `~/source/discourse/config/database.yml`.
 
@@ -210,7 +220,7 @@ production:
     - production.localhost
 ```
 
-I'm not a fan of entering the DB password as clear text in the database.yml file. If you have a better solution to this, let me know. 
+I'm not a fan of entering the DB password as clear text in the database.yml file. If you have a better solution to this, let me know.
 
 ## Deploy the Database and Start the Server
 
